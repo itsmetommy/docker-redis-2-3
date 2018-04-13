@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+
+  redis-master:
+    image: redis:2.6.17
+    container_name: redis-master
+    volumes:
+      - "./data/redis-master:/data"
+
+  redis-slave:
+    image: redis:2.6.17
+    container_name: redis-slave
+    command: redis-server --slaveof redis-master 6379
+    volumes:
+      - "./data/redis-slave:/data"
+    links:
+      - master:redis-master
+
+  redis-sentinel-1:
+    container_name: redis-sentinel-1
+    build: redis-sentinel
+    links:
+      - master:redis-master
+      - slave:redis-slave
+  
+  redis-sentinel-2:
+    container_name: redis-sentinel-2
+    build: redis-sentinel
+    links:
+      - master:redis-master
+      - slave:redis-slave
+  
+  redis-sentinel-3:
+    container_name: redis-sentinel-3
+    build: redis-sentinel
+    links:
+      - master:redis-master
+      - slave:redis-slave
